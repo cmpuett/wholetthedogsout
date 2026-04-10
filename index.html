@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dog Status</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 12px;
+      max-width: 300px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .name {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 15px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: #007bff;
+      color: white;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🐕 Dog Yard Status</h1>
+
+  <div class="card">
+    <div class="name">Casey</div>
+    <div class="status" id="casey">...</div>
+    <button onclick="toggle('casey')">Toggle</button>
+  </div>
+
+  <div class="card">
+    <div class="name">Dad</div>
+    <div class="status" id="dad">...</div>
+    <button onclick="toggle('dad')">Toggle</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+   const firebaseConfig = {
+  apiKey: "AIzaSyBXtDPdUxfp2ccQbCLwj_xYRqqQymb53FM",
+  authDomain: "who-let-the-dogs-out-e69c5.firebaseapp.com",
+  databaseURL: "https://who-let-the-dogs-out-e69c5-default-rtdb.firebaseio.com",
+  projectId: "who-let-the-dogs-out-e69c5",
+  storageBucket: "who-let-the-dogs-out-e69c5.firebasestorage.app",
+  messagingSenderId: "667727438991",
+  appId: "1:667727438991:web:d128dcf72e2102ca1c7cfa",
+  measurementId: "G-BJSN6RWMN9"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const statusRef = ref(db, "status");
+
+    onValue(statusRef, (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById("casey").textContent = data.casey;
+      document.getElementById("dad").textContent = data.dad;
+    });
+
+    window.toggle = (person) => {
+      onValue(statusRef, (snapshot) => {
+        const data = snapshot.val();
+        const newStatus = data[person] === "inside" ? "outside" : "inside";
+        set(ref(db, "status/" + person), newStatus);
+      }, { onlyOnce: true });
+    };
+  </script>
+
+</body>
+</html>
+
+
